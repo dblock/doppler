@@ -4,20 +4,19 @@ class PagesController < ApplicationController
   def show
     fail 'Invalid Id' unless params[:id] =~ /^[\w\/]*$/
     filename = Rails.root.join("app/views/content/#{params[:id]}.md")
-    @content = Rails.cache.fetch "content/#{params[:id]}/#{File.mtime(filename)}/#{current_user ? current_user.id : nil}" do
+    @content = begin # Rails.cache.fetch "content/#{params[:id]}/#{File.mtime(filename)}/#{current_user ? current_user.id : nil}" do
       text = File.read(filename)
-      text = text.gsub(/\#\{(?<var> [\w\.,_]*)\}/x) do
+      text = text.gsub(/\#\{(?<var> [\w\.,_\/\:]*)\}/x) do
         var = $~[:var]
-        case var
-        when 'ArtsyAPI.artsy_api_root'
+        if var == 'ArtsyAPI.artsy_api_root'
           ArtsyAPI.artsy_api_root
-        when 'current_user.id'
+        elsif var == 'current_user.id'
           current_user ? current_user.id : '...'
-        when 'xapp_token'
+        elsif var == 'xapp_token'
           '...' # TODO
-        when 'access_token'
+        elsif var == 'access_token'
           current_user ? current_user.access_token : '...'
-        when 'application_id'
+        elsif var == 'application_id'
           if authenticated?
             artsy_client.links.applications.embedded
               .try(:applications)
@@ -27,6 +26,13 @@ class PagesController < ApplicationController
           else
             '...'
           end
+        elsif var.start_with? "resource://"
+          parts = var.split("/")[2..-1]
+          type = parts[0]
+          artsy_client.links.send(type)
+          args = parts[1].split(':', 2)
+          # p artsy_client.links.send(parts[0])
+          parts
         else
           "unknown: #{var}"
         end

@@ -16,8 +16,10 @@ Rails.application.routes.draw do
     :applications,
     :artists,
     :artworks,
+    :edition_sets,
     :docs,
     :profiles,
+    :partners,
     :status,
     :users
   ].each do |page|

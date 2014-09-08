@@ -13,6 +13,19 @@ class ApplicationController < ActionController::Base
   end
 
   def artsy_client
-    @client ||= ArtsyAPI.client(access_token: current_user.try(:access_token))
+    if authenticated?
+      @client ||= ArtsyAPI.client(access_token: current_user.try(:access_token))
+    else
+      @client ||= begin
+        response = Net::HTTP.post_form(URI.parse("#{ArtsyAPI.artsy_api_root}/tokens/xapp_token"),
+          client_id: ENV['ARTSY_API_CLIENT_ID'],
+          client_secret: ENV['ARTSY_API_CLIENT_SECRET']
+        )
+        xapp_response = JSON.parse(response.body)
+        raise xapp_response['message'] || 'Unknown Error' if response.code != "201"
+        xapp_token = xapp_response['token']
+        ArtsyAPI.client(xapp_token: xapp_token)
+      end
+    end
   end
 end

@@ -43,7 +43,7 @@ The response is a [paginated result](/docs/pagination) with embedded artists.
 Users can retrieve a specific artist by ID by rendering the "artist" link template from [root](#{ArtsyAPI.artsy_api_root}).
 
 ```
-curl -v "#{ArtsyAPI.artsy_api_root}/artists/#{application_id}" -H "X-XAPP-Token:#{xapp_token}"
+curl -v "#{ArtsyAPI.artsy_api_root}/artists/#{id}" -H "X-XAPP-Token:#{xapp_token}"
 ```
 
 ## Artist JSON Format
@@ -51,8 +51,8 @@ curl -v "#{ArtsyAPI.artsy_api_root}/artists/#{application_id}" -H "X-XAPP-Token:
 Key              | Description                                        |
 ----------------:|:---------------------------------------------------|
 id               | Artist ID.                                         |
-updated_at       | Date/time when the status was created.             |
-updated_at       | Date/time when the status was last updated.        |
+created_at       | Date/time when the artist was created.             |
+updated_at       | Date/time when the artist was last updated.        |
 name             | Artist's name.                                     |
 gender           | Artist's gender, typically "male" or "female".     |
 birthday         | Date or time period when the artist was born.      |
@@ -83,7 +83,6 @@ artworks   | All artist's [artworks](/docs/artworks).        |
 #### Example
 
 ``` json
-
 {
   "id" : "4d8b92b34eb68a1b2c0003f4",
   "created_at" : "2010-08-23T14:15:30.000Z",
@@ -107,24 +106,24 @@ artworks   | All artist's [artworks](/docs/artworks).        |
     "curies" : [
       {
         "name" : "image",
-        "href" : "http://static1.artsy.net/artist_images/52f6bdda4a04f5d504f69b03/1/{?rel}",
+        "href" : "http://static.artsy.net/artist_images/52f6bdda4a04f5d504f69b03/1/{?rel}",
         "templated" : true
       }
     ],
     "thumbnail" : {
-      "href" : "http://static1.artsy.net/artist_images/52f6bdda4a04f5d504f69b03/1/four_thirds.jpg"
+      "href" : "http://static.artsy.net/artist_images/52f6bdda4a04f5d504f69b03/1/four_thirds.jpg"
     },
     "image:self" : {
       "href" : "{?image_version}.jpg"
     },
     "self" : {
-      "href" : "https://api.artsy.net/api/artists/4d8b92b34eb68a1b2c0003f4"
+      "href" : "#{ArtsyAPI.artsy_api_root}/api/artists/4d8b92b34eb68a1b2c0003f4"
     },
     "permalink" : {
       "href" : "http://artsy.net/artist/andy-warhol"
     },
     "artworks" : {
-      "href" : "https://api.artsy.net/api/artworks?artist_id=4d8b92b34eb68a1b2c0003f4&public=true"
+      "href" : "#{ArtsyAPI.artsy_api_root}/api/artworks?artist_id=4d8b92b34eb68a1b2c0003f4&public=true"
     }
   },
   "image_versions" : ["square", "tall", "large", "four_thirds"]
